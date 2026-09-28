@@ -1,12 +1,14 @@
 name = "techdome-qa-runner"
 main = "src/index.js"
 compatibility_date = "2026-09-01"
+workers_dev = true
+preview_urls = false
 
 [vars]
 # ── EDIT THESE THREE ──────────────────────────────────────────────
-GITHUB_OWNER = "YOUR_GITHUB_USERNAME"
+GITHUB_OWNER = "pankajphoughat2"
 GITHUB_REPO = "techdome-playwright-qa"
-PAGES_BASE = "https://YOUR_GITHUB_USERNAME.github.io/techdome-playwright-qa"
+PAGES_BASE = "https://pankajphoughat2.github.io/techdome-playwright-qa"
 # ──────────────────────────────────────────────────────────────────
 WORKFLOW_FILE = "e2e.yml"
 GITHUB_REF = "main"

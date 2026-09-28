@@ -2,7 +2,8 @@
 
 End-to-end, integration, security, accessibility and load tests for [techdome.io](https://techdome.io), with a user story map, a bug report with screenshots, and a story → test → bug traceability matrix generated from every run.
 
-> **▶ Run it yourself:** _add your Worker URL here after following [`docs/runner-setup.md`](docs/runner-setup.md)_. One click starts the suite on GitHub Actions and opens the report.
+> **▶ Run it yourself: https://techdome-qa-runner.pankajqa2026.workers.dev**
+> One click starts the suite on GitHub Actions, shows live progress, and links the HTML report. Runs are serialized with a 10-minute cool-down, so techdome.io never sees more than 5 load-test users. Every past report: [GitHub Pages](https://pankajphoughat2.github.io/techdome-playwright-qa/runs/36479155402/) · how it's built: [`docs/runner-setup.md`](docs/runner-setup.md).
 
 ```bash
 npm install
