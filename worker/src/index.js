@@ -87,12 +87,25 @@ function shapeRun(env, r) {
 }
 
 async function summaryFor(env, runId) {
-  // Published by the workflow next to the HTML report. Cached: a finished run never changes.
+  // Published by the workflow next to the HTML report. Only successful reads are cached (a
+  // finished run never changes). A run completes ~30 s before GitHub Pages finishes
+  // publishing, so an early 404 is normal and must NOT be cached. Caching it (as a blanket
+  // cf.cacheTtl did) left the Tests column blank for minutes after the report existed.
+  //
+  // The cache key is deliberately NOT the plain Pages URL: fetch() with `cf` cache options
+  // writes to the same cache under the request URL, which is how a 404 from before Pages
+  // had published got stored and then served forever by cache.match().
   const cache = caches.default;
-  const key = new Request(`${env.PAGES_BASE}/runs/${runId}/summary.json`);
+  const src = `${env.PAGES_BASE}/runs/${runId}/summary.json`;
+  const key = new Request(`${src}?runner-cache=v2`);
   const hit = await cache.match(key);
-  if (hit) return hit.json();
-  const res = await fetch(key, { cf: { cacheTtl: 300 } });
+  if (hit) {
+    const cached = hit.ok ? await hit.json().catch(() => null) : null;
+    if (cached) return cached;
+    await cache.delete(key); // never let a bad entry stick
+  }
+  // Unique query string: bypass any edge/CDN copy of an earlier 404 from Pages itself.
+  const res = await fetch(`${src}?v=${Date.now()}`, { cf: { cacheTtlByStatus: { '200-299': 300, '404': 0, '500-599': 0 } } });
   if (!res.ok) return null;
   const data = await res.json().catch(() => null);
   if (data) await cache.put(key, new Response(JSON.stringify(data), { headers: { 'Cache-Control': 'max-age=86400' } }));
@@ -312,7 +325,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;p
 <script>
 const CONFIG = ${cfg};
 const $ = (id) => document.getElementById(id);
-let pollTimer = null, tick = null, startedAt = null;
+let pollTimer = null, tick = null, startedAt = null, historyTimer = null;
 
 const fmtDur = (ms) => { if (ms == null) return '–'; const s = Math.round(ms / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 const ago = (iso) => { const m = Math.round((Date.now() - new Date(iso)) / 60000); if (m < 1) return 'just now'; if (m < 60) return m + ' min ago'; const h = Math.round(m / 60); return h < 24 ? h + ' h ago' : Math.round(h / 24) + ' d ago'; };
@@ -344,8 +357,12 @@ function resultBadge(r) {
   return r.conclusion === 'success' ? '<span class="badge ok">Passed</span>' : '<span class="badge bad">' + esc(r.conclusion || 'failed') + '</span>';
 }
 
-function testsCell(s) {
-  if (!s || !s.totals) return '<span class="sub">–</span>';
+function testsCell(s, r) {
+  if (!s || !s.totals) {
+    // Finished within the last hour but no summary yet → GitHub Pages is still publishing it.
+    const fresh = r && r.status === 'completed' && Date.now() - new Date(r.createdAt) < 60 * 60000;
+    return fresh ? '<span class="badge warn">Publishing…</span>' : '<span class="sub">–</span>';
+  }
   const t = s.totals;
   return '<span class="mono">' + t.passed + ' ✅</span> · <span class="badge bug">' + t.knownBugs + ' 🐞</span>' + (t.flaky ? ' · ' + t.flaky + ' ⚠️' : '') + (t.failed ? ' · <b style="color:var(--bad)">' + t.failed + ' ❌</b>' : '');
 }
@@ -360,8 +377,12 @@ async function loadHistory() {
     $('live').className = 'badge ' + (active ? 'warn' : 'ok');
     $('live').textContent = active ? 'Run in progress' : 'Idle, ready to run';
     if (active && !pollTimer) follow(active.id, new Date(active.createdAt));
+    // A just-finished run's summary appears ~30-60 s later, once Pages has published. Check back.
+    const publishing = runs.some((r) => r.status === 'completed' && !r.summary && Date.now() - new Date(r.createdAt) < 60 * 60000);
+    clearTimeout(historyTimer);
+    if (publishing) historyTimer = setTimeout(loadHistory, 30000);
     if (!runs.length) { $('rows').innerHTML = '<tr><td colspan="6" class="empty">No runs yet. Start the first one above.</td></tr>'; return; }
-    $('rows').innerHTML = runs.map((r) => '<tr><td class="mono">#' + r.number + '<br><span class="sub">' + esc(r.sha) + '</span></td><td>' + ago(r.createdAt) + '<br><span class="sub">' + fmtDur(r.durationMs) + '</span></td><td class="hide-sm">' + esc(r.event.replace('workflow_dispatch', 'manual')) + '</td><td>' + resultBadge(r) + '</td><td class="nw">' + testsCell(r.summary) + '</td><td class="nw">' + (r.status === 'completed' ? '<a href="' + r.reportUrl + '" target="_blank" rel="noopener">Report</a> · ' : '') + '<a href="' + r.actionsUrl + '" target="_blank" rel="noopener">Actions</a></td></tr>').join('');
+    $('rows').innerHTML = runs.map((r) => '<tr><td class="mono">#' + r.number + '<br><span class="sub">' + esc(r.sha) + '</span></td><td>' + ago(r.createdAt) + '<br><span class="sub">' + fmtDur(r.durationMs) + '</span></td><td class="hide-sm">' + esc(r.event.replace('workflow_dispatch', 'manual')) + '</td><td>' + resultBadge(r) + '</td><td class="nw">' + testsCell(r.summary, r) + '</td><td class="nw">' + (r.status === 'completed' ? '<a href="' + r.reportUrl + '" target="_blank" rel="noopener">Report</a> · ' : '') + '<a href="' + r.actionsUrl + '" target="_blank" rel="noopener">Actions</a></td></tr>').join('');
     const done = runs.filter((r) => r.status === 'completed');
     $('s-pass').textContent = done.length ? done.filter((r) => r.conclusion === 'success').length + '/' + done.length : '–';
     const durs = done.map((r) => r.durationMs).filter(Boolean).sort((a, b) => a - b);

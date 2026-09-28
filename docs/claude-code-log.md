@@ -1,6 +1,6 @@
 # Claude Code Usage Log
 
-> **Note to self (delete before submitting):** Prompt #1 below is the real, verbatim session that scaffolded this repo. Everything under "What I changed / accepted / rejected" must be **my own review**. The brief says Claude's output must not be submitted verbatim, and a log with no judgment in it is a red flag. The "Corrections found during generation" list is a factual record of where the first draft was wrong. Use it as a starting point for my own review, not as a substitute for it. Prompt #2 is also real and verbatim. Add an entry for every later prompt (Prompt #3 onward); the brief asks for at least 5.
+> **Note to self (delete before submitting):** Prompt #1 below is the real, verbatim session that scaffolded this repo. Everything under "What I changed / accepted / rejected" must be **my own review**. The brief says Claude's output must not be submitted verbatim, and a log with no judgment in it is a red flag. The "Corrections found during generation" list is a factual record of where the first draft was wrong. Use it as a starting point for my own review, not as a substitute for it. Prompts #2 and #3 are also real and verbatim. Add an entry for every later prompt (Prompt #4 onward); the brief asks for at least 5.
 
 ---
 
@@ -81,10 +81,16 @@
 ## Prompt #3
 
 **What I asked:**
+> why it is blank under test *(screenshot of the runner page: run #2 "Passed" but the Tests column showed "–")*
 
 **What Claude did:**
+- Checked GitHub and Pages directly. Run #2 had passed and its `summary.json` **was** published, so the tests were fine and the bug was in the Worker.
+- First diagnosis (**incomplete**): the run finishes ~25 s before Pages publishes, and the Worker's `fetch(…, { cf: { cacheTtl: 300 } })` cached the early 404. The fix for that (don't cache 404s, bust the cache) was deployed, but the column was **still blank**.
+- Stopped guessing and added a temporary diagnostic route. It showed `cacheHit: true`: the poisoned 404 was sitting in `caches.default` under the same URL key, because a `fetch()` with `cf` cache options writes into the same cache that `cache.match()` reads. `hit.json()` failed on the 404 page, which returned "no summary" forever.
+- Real fix: a separate cache key that `fetch()` can't write to, only trust a cached 200 JSON entry (delete anything else), plus a UI change that shows "Publishing…" and re-checks every 30 s instead of "–". Removed the debug route and verified it returns 404 after propagation.
 
 **What I changed / accepted / rejected:**
+<!-- MY REVIEW GOES HERE -->
 
 ---
 
