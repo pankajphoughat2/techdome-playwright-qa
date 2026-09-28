@@ -1,4 +1,7 @@
 name: techdome.io QA suite
+# Suite in the run name: shows in the Actions list, and it's the only way the runner page
+# can read which suite a run used (the API doesn't return workflow_dispatch inputs).
+run-name: "QA · ${{ github.event.inputs.suite || 'all' }} · ${{ github.event_name }}"
 
 on:
   workflow_dispatch:

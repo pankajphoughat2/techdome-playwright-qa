@@ -20,6 +20,22 @@ const GH = 'https://api.github.com';
 const ACTIVE = new Set(['queued', 'in_progress', 'waiting', 'requested', 'pending']);
 const SUITES = ['all', 'e2e', 'integration', 'security', 'load'];
 
+// What each suite choice actually runs. Shown in the dropdown, the "Tests running"
+// stage and the history table.
+const SUITE_INFO = {
+  all: { label: 'Full suite', short: 'Full', detail: 'E2E → integration → security, then load (5 users) alone' },
+  e2e: { label: 'E2E only', short: 'E2E', detail: 'Pages, navigation, forms, CTAs, mobile, chat, SEO, accessibility' },
+  integration: { label: 'Integration only', short: 'Integration', detail: 'API contracts, sitemap crawl, third-party scripts, caching, slow network' },
+  security: { label: 'Security only', short: 'Security', detail: 'Headers, clickjacking, CORS, injection (mocked), data exposure' },
+  load: { label: 'Load only (5 users)', short: 'Load', detail: 'Exactly 5 concurrent users: p95 < 3 s, zero 5xx' },
+};
+
+/** The workflow's run-name is "QA · <suite> · <event>" (see e2e.yml), which is the only place the API exposes the input. */
+function parseSuite(title) {
+  const m = /^QA · (\w+) ·/.exec(title || '');
+  return m && SUITES.includes(m[1]) ? m[1] : null;
+}
+
 // Workflow step names (see .github/workflows/e2e.yml) → UI stages.
 const STAGES = [
   { key: 'queued', label: 'Queued on GitHub', detail: 'Waiting for a runner', steps: [] },
@@ -78,6 +94,7 @@ function shapeRun(env, r) {
     status: r.status,
     conclusion: r.conclusion,
     event: r.event,
+    suite: parseSuite(r.display_title) ?? (r.event === 'schedule' ? 'all' : null),
     createdAt: r.created_at,
     durationMs: end ? new Date(end) - new Date(started) : null,
     sha: r.head_sha?.slice(0, 7),
@@ -86,7 +103,11 @@ function shapeRun(env, r) {
   };
 }
 
-async function summaryFor(env, runId) {
+const summaryFor = (env, runId) => pagesJson(env, runId, 'summary.json');
+// run.json records { sha, runId, suite, event }. Used for runs from before run-name existed.
+const runInfoFor = (env, runId) => pagesJson(env, runId, 'run.json');
+
+async function pagesJson(env, runId, file) {
   // Published by the workflow next to the HTML report. Only successful reads are cached (a
   // finished run never changes). A run completes ~30 s before GitHub Pages finishes
   // publishing, so an early 404 is normal and must NOT be cached. Caching it (as a blanket
@@ -96,7 +117,7 @@ async function summaryFor(env, runId) {
   // writes to the same cache under the request URL, which is how a 404 from before Pages
   // had published got stored and then served forever by cache.match().
   const cache = caches.default;
-  const src = `${env.PAGES_BASE}/runs/${runId}/summary.json`;
+  const src = `${env.PAGES_BASE}/runs/${runId}/${file}`;
   const key = new Request(`${src}?runner-cache=v2`);
   const hit = await cache.match(key);
   if (hit) {
@@ -121,12 +142,20 @@ function publicConfig(env) {
     requiresKey: Boolean(env.RUN_KEY),
     cooldownMinutes: Number(env.COOLDOWN_MINUTES || 10),
     suites: SUITES,
+    suiteInfo: SUITE_INFO,
     stages: STAGES.map(({ key, label, detail }) => ({ key, label, detail })),
   };
 }
 
+/** Fill in `suite` for finished runs whose name predates run-name, from their published run.json. */
+async function withSuite(env, run) {
+  if (run.suite || ACTIVE.has(run.status)) return run;
+  const info = await runInfoFor(env, run.id).catch(() => null);
+  return { ...run, suite: SUITES.includes(info?.suite) ? info.suite : null };
+}
+
 async function history(env) {
-  const runs = (await listRuns(env, 10)).map((r) => shapeRun(env, r));
+  const runs = await Promise.all((await listRuns(env, 10)).map((r) => withSuite(env, shapeRun(env, r))));
   const summaries = await Promise.all(runs.map((r) => (ACTIVE.has(r.status) ? null : summaryFor(env, r.id).catch(() => null))));
   return { runs: runs.map((r, i) => ({ ...r, summary: summaries[i] })) };
 }
@@ -183,7 +212,7 @@ async function runStatus(env, id) {
     if (stage.key === 'tests' && state === 'done' && run.conclusion === 'failure') state = 'failed';
     return { key: stage.key, state };
   });
-  const shaped = shapeRun(env, run);
+  const shaped = await withSuite(env, shapeRun(env, run));
   const summary = ACTIVE.has(run.status) ? null : await summaryFor(env, id).catch(() => null);
   return { ...shaped, stages: stageStatus, summary };
 }
@@ -237,7 +266,7 @@ a{color:var(--accent)}h1{font-size:28px;line-height:1.2;margin:0 0 6px;letter-sp
 .top{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
 .badge{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid var(--line);color:var(--ink2);background:var(--bg)}
 .badge.ok{color:var(--ok);background:var(--ok-bg);border-color:transparent}.badge.bad{color:var(--bad);background:var(--bad-bg);border-color:transparent}
-.badge.warn{color:var(--warn);background:var(--warn-bg);border-color:transparent}.badge.bug{color:var(--bug);background:var(--bug-bg);border-color:transparent}
+.badge.warn{color:var(--warn);background:var(--warn-bg);border-color:transparent}.badge.bug{color:var(--bug);background:var(--bug-bg);border-color:transparent}.badge.suite{color:var(--accent);border-color:var(--accent)}
 .runbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
 select,input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;min-height:42px}
 button{font:inherit;font-weight:600;border:0;border-radius:8px;padding:10px 18px;min-height:42px;background:var(--accent);color:var(--accent-ink);cursor:pointer}
@@ -295,12 +324,12 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;p
     <div class="stats">
       <div class="stat"><div class="v" id="s-pass">–</div><div class="k">Runs green</div></div>
       <div class="stat"><div class="v" id="s-time">–</div><div class="k">Typical run time</div></div>
-      <div class="stat"><div class="v" id="s-bugs">–</div><div class="k">Known bugs reproduced (latest)</div></div>
-      <div class="stat"><div class="v" id="s-p95">–</div><div class="k">Load p95, 5 users (latest)</div></div>
+      <div class="stat"><div class="v" id="s-bugs">–</div><div class="k">Known bugs reproduced (latest full run)</div></div>
+      <div class="stat"><div class="v" id="s-p95">–</div><div class="k">Load p95, 5 users (latest load run)</div></div>
     </div>
     <div class="tablewrap" style="margin-top:16px">
       <table>
-        <thead><tr><th>Run</th><th>Started</th><th class="hide-sm">Trigger</th><th>Result</th><th>Tests</th><th>Links</th></tr></thead>
+        <thead><tr><th>Run</th><th>Started</th><th>Suite</th><th class="hide-sm">Trigger</th><th>Result</th><th>Tests</th><th>Links</th></tr></thead>
         <tbody id="rows"><tr><td colspan="6" class="empty">Loading recent runs…</td></tr></tbody>
       </table>
     </div>
@@ -332,15 +361,34 @@ const ago = (iso) => { const m = Math.round((Date.now() - new Date(iso)) / 60000
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 function init() {
-  $('suite').innerHTML = CONFIG.suites.map((s) => '<option value="' + s + '">' + (s === 'all' ? 'Everything (recommended)' : s) + '</option>').join('');
+  $('suite').innerHTML = CONFIG.suites.map((s) => '<option value="' + s + '">' + esc(CONFIG.suiteInfo[s].label) + (s === 'all' ? ' (recommended)' : '') + '</option>').join('');
   if (CONFIG.requiresKey) $('key').hidden = false;
   $('stages').innerHTML = CONFIG.stages.map((st) => '<li class="stage" data-key="' + st.key + '" data-state="pending"><div class="dot" aria-hidden="true"></div><div><b>' + esc(st.label) + '</b><span>' + esc(st.detail) + '</span></div><div class="st">pending</div></li>').join('');
+  // Preview what the chosen suite will run, before it's started.
+  $('suite').addEventListener('change', () => { if (!pollTimer) { resetStages(); showSuite($('suite').value); } });
+  showSuite($('suite').value);
   const r = CONFIG.repoUrl + '/blob/main/';
   $('doclinks').innerHTML = [['Repository', CONFIG.repoUrl], ['User story map', r + 'docs/user-story-map.md'], ['Bug report', r + 'docs/bugs.md'], ['Traceability', r + 'docs/traceability.md'], ['Load results', r + 'docs/load-test-results.md'], ['Workflow', r + '.github/workflows/e2e.yml']]
     .map(([t, u]) => '<a href="' + u + '" target="_blank" rel="noopener">' + t + '</a>').join('');
   $('run').addEventListener('click', start);
   loadHistory();
 }
+
+const suiteInfo = (s) => CONFIG.suiteInfo[s] || { label: 'Unknown suite', short: '?', detail: '' };
+
+/** Point the "Tests running" stage at the suite that is (or will be) running. */
+function showSuite(suite) {
+  const li = document.querySelector('.stage[data-key="tests"]');
+  if (!li || !suite) return;
+  li.querySelector('b').textContent = 'Tests running · ' + suiteInfo(suite).label;
+  li.querySelector('span').textContent = suiteInfo(suite).detail;
+}
+
+function resetStages() {
+  setStages(CONFIG.stages.map((s) => ({ key: s.key, state: 'pending' })));
+}
+
+const suiteBadge = (s) => s ? '<span class="badge suite">' + esc(suiteInfo(s).short) + '</span>' : '<span class="sub">–</span>';
 
 function setStages(stages) {
   for (const s of stages) {
@@ -381,24 +429,29 @@ async function loadHistory() {
     const publishing = runs.some((r) => r.status === 'completed' && !r.summary && Date.now() - new Date(r.createdAt) < 60 * 60000);
     clearTimeout(historyTimer);
     if (publishing) historyTimer = setTimeout(loadHistory, 30000);
-    if (!runs.length) { $('rows').innerHTML = '<tr><td colspan="6" class="empty">No runs yet. Start the first one above.</td></tr>'; return; }
-    $('rows').innerHTML = runs.map((r) => '<tr><td class="mono">#' + r.number + '<br><span class="sub">' + esc(r.sha) + '</span></td><td>' + ago(r.createdAt) + '<br><span class="sub">' + fmtDur(r.durationMs) + '</span></td><td class="hide-sm">' + esc(r.event.replace('workflow_dispatch', 'manual')) + '</td><td>' + resultBadge(r) + '</td><td class="nw">' + testsCell(r.summary, r) + '</td><td class="nw">' + (r.status === 'completed' ? '<a href="' + r.reportUrl + '" target="_blank" rel="noopener">Report</a> · ' : '') + '<a href="' + r.actionsUrl + '" target="_blank" rel="noopener">Actions</a></td></tr>').join('');
+    if (!runs.length) { $('rows').innerHTML = '<tr><td colspan="7" class="empty">No runs yet. Start the first one above.</td></tr>'; return; }
+    $('rows').innerHTML = runs.map((r) => '<tr><td class="mono">#' + r.number + '<br><span class="sub">' + esc(r.sha) + '</span></td><td>' + ago(r.createdAt) + '<br><span class="sub">' + fmtDur(r.durationMs) + '</span></td><td class="nw">' + suiteBadge(r.suite) + '</td><td class="hide-sm">' + esc(r.event.replace('workflow_dispatch', 'manual')) + '</td><td>' + resultBadge(r) + '</td><td class="nw">' + testsCell(r.summary, r) + '</td><td class="nw">' + (r.status === 'completed' ? '<a href="' + r.reportUrl + '" target="_blank" rel="noopener">Report</a> · ' : '') + '<a href="' + r.actionsUrl + '" target="_blank" rel="noopener">Actions</a></td></tr>').join('');
     const done = runs.filter((r) => r.status === 'completed');
     $('s-pass').textContent = done.length ? done.filter((r) => r.conclusion === 'success').length + '/' + done.length : '–';
     const durs = done.map((r) => r.durationMs).filter(Boolean).sort((a, b) => a - b);
     $('s-time').textContent = durs.length ? fmtDur(durs[Math.floor(durs.length / 2)]) : '–';
-    const latest = done.find((r) => r.summary && r.summary.totals);
-    $('s-bugs').textContent = latest ? (latest.summary.bugsConfirmedThisRun || []).length : '–';
-    const p95 = latest && Object.entries(latest.summary.metrics || {}).find(([k]) => k.startsWith('p95:'));
-    $('s-p95').textContent = p95 ? p95[1].split(' ')[0] + ' ms' : '–';
+    // A partial run (e.g. integration only) reproduces fewer bugs and has no load numbers,
+    // so each stat comes from the latest run that actually measured it.
+    const latestFull = done.find((r) => r.suite === 'all' && r.summary && r.summary.totals);
+    $('s-bugs').textContent = latestFull ? (latestFull.summary.bugsConfirmedThisRun || []).length : '–';
+    const p95Of = (r) => r.summary && Object.entries(r.summary.metrics || {}).find(([k]) => k.startsWith('p95:'));
+    const withLoad = done.find(p95Of);
+    $('s-p95').textContent = withLoad ? p95Of(withLoad)[1].split(' ')[0] + ' ms' : '–';
   } catch (e) {
-    $('rows').innerHTML = '<tr><td colspan="6" class="empty">Could not load runs: ' + esc(e.message) + '</td></tr>';
+    $('rows').innerHTML = '<tr><td colspan="7" class="empty">Could not load runs: ' + esc(e.message) + '</td></tr>';
   }
 }
 
 async function start() {
   $('run').disabled = true;
-  $('msg').className = 'msg'; $('msg').textContent = 'Starting a run on GitHub Actions…';
+  resetStages();
+  showSuite($('suite').value);
+  $('msg').className = 'msg'; $('msg').textContent = 'Starting "' + suiteInfo($('suite').value).label + '" on GitHub Actions…';
   try {
     const res = await fetch('/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ suite: $('suite').value, key: $('key').value }) });
     const data = await res.json();
@@ -413,6 +466,7 @@ async function start() {
 
 function follow(id, since) {
   $('run').disabled = true;
+  $('suite').disabled = true; // the dropdown mirrors the run being followed
   startedAt = since;
   clearInterval(tick); tick = setInterval(() => { $('timer').textContent = fmtDur(Date.now() - startedAt); }, 1000);
   const poll = async () => {
@@ -421,12 +475,17 @@ function follow(id, since) {
       const r = await res.json();
       if (!res.ok) throw new Error(r.error);
       setStages(r.stages);
+      // Show the suite of the run being followed. It may have been started from another
+      // browser or the Actions tab, so it can differ from this dropdown's selection.
+      if (r.suite) { showSuite(r.suite); $('suite').value = r.suite; }
       if (r.status === 'completed') {
         clearInterval(tick); clearTimeout(pollTimer); pollTimer = null;
         $('timer').textContent = fmtDur(r.durationMs);
         $('msg').className = 'msg' + (r.conclusion === 'success' ? '' : ' err');
-        $('msg').innerHTML = (r.conclusion === 'success' ? 'Run passed. ' : 'Run finished with failures. ') + '<a href="' + r.reportUrl + '" target="_blank" rel="noopener">Open the report</a> (GitHub Pages can take ~1 min to publish) · <a href="' + r.actionsUrl + '" target="_blank" rel="noopener">Actions log</a>';
+        const what = r.suite ? '"' + esc(suiteInfo(r.suite).label) + '" ' : '';
+        $('msg').innerHTML = (r.conclusion === 'success' ? what + 'run passed. ' : what + 'run finished with failures. ') + '<a href="' + r.reportUrl + '" target="_blank" rel="noopener">Open the report</a> (GitHub Pages can take ~1 min to publish) · <a href="' + r.actionsUrl + '" target="_blank" rel="noopener">Actions log</a>';
         $('run').disabled = false;
+        $('suite').disabled = false;
         loadHistory();
         return;
       }
