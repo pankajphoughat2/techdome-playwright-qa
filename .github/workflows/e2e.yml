@@ -1,0 +1,103 @@
+name: techdome.io QA suite
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: Which projects to run
+        type: choice
+        default: all
+        options: [all, e2e, integration, security, load]
+  schedule:
+    # Daily synthetic check, 06:00 IST. Known-bug tests flip to "unexpectedly passed" the day Techdome ships a fix.
+    - cron: '30 0 * * *'
+
+# HARD CONSTRAINT: never more than 5 concurrent users against techdome.io.
+# One global group + no cancellation = runs queue one after another, so two triggers
+# can never overlap (two overlapping load tests would be 10 users).
+concurrency:
+  group: techdome-live-site
+  cancel-in-progress: false
+
+permissions:
+  contents: write # push the report to the gh-pages branch
+
+jobs:
+  test:
+    name: Playwright
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run tests
+        id: tests
+        continue-on-error: true
+        env:
+          CI: 'true'
+          UPDATE_DOCS: ${{ (github.event.inputs.suite || 'all') == 'all' && '1' || '0' }}
+        run: |
+          SUITE="${{ github.event.inputs.suite || 'all' }}"
+          if [ "$SUITE" = "all" ]; then
+            npx playwright test
+          elif [ "$SUITE" = "load" ]; then
+            npx playwright test --project=load --no-deps
+          else
+            npx playwright test --project="$SUITE"
+          fi
+
+      - name: Write job summary
+        if: always()
+        run: |
+          if [ -f test-results/traceability.md ]; then cat test-results/traceability.md >> "$GITHUB_STEP_SUMMARY"; fi
+          if [ -f docs/load-test-results.md ] && [ "${{ github.event.inputs.suite || 'all' }}" != "e2e" ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"; sed -n '1,40p' docs/load-test-results.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Assemble report site
+        if: always()
+        run: |
+          mkdir -p site
+          cp -r playwright-report/. site/ 2>/dev/null || echo "<h1>No HTML report produced</h1>" > site/index.html
+          cp test-results/summary.json site/summary.json 2>/dev/null || echo '{}' > site/summary.json
+          cp test-results/traceability.md site/traceability.md 2>/dev/null || true
+          cp docs/load-test-results.md site/load-test-results.md 2>/dev/null || true
+          # Record exactly which source was tested next to its report.
+          echo "{\"sha\":\"${GITHUB_SHA}\",\"runId\":\"${GITHUB_RUN_ID}\",\"suite\":\"${{ github.event.inputs.suite || 'all' }}\",\"event\":\"${GITHUB_EVENT_NAME}\"}" > site/run.json
+
+      - name: Publish report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: site
+          destination_dir: runs/${{ github.run_id }}
+          keep_files: true
+          commit_message: 'report: run ${{ github.run_id }}'
+
+      - name: Upload raw artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-${{ github.run_id }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
+
+      - name: Fail the job if tests failed
+        if: steps.tests.outcome == 'failure'
+        run: exit 1

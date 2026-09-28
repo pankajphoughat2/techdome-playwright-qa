@@ -1,0 +1,19 @@
+name = "techdome-qa-runner"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+# ── EDIT THESE THREE ──────────────────────────────────────────────
+GITHUB_OWNER = "YOUR_GITHUB_USERNAME"
+GITHUB_REPO = "techdome-playwright-qa"
+PAGES_BASE = "https://YOUR_GITHUB_USERNAME.github.io/techdome-playwright-qa"
+# ──────────────────────────────────────────────────────────────────
+WORKFLOW_FILE = "e2e.yml"
+GITHUB_REF = "main"
+# Minimum minutes between two runs started from this page. Protects techdome.io from
+# being hammered by visitors clicking "Run" repeatedly.
+COOLDOWN_MINUTES = "10"
+
+# Secrets (set with `npx wrangler secret put <NAME>`, never commit them):
+#   GITHUB_TOKEN  fine-grained PAT, this repo only: Actions = Read and write, Metadata = Read
+#   RUN_KEY       optional passcode; when set, the Run button asks for it

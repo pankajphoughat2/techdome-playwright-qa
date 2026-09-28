@@ -1,0 +1,32 @@
+{
+  "name": "techdome-playwright-qa",
+  "version": "1.0.0",
+  "description": "Playwright QA suite for techdome.io",
+  "scripts": {
+    "test": "playwright test",
+    "test:e2e": "playwright test --project=e2e",
+    "test:integration": "playwright test --project=integration",
+    "test:security": "playwright test --project=security",
+    "test:load": "playwright test --project=load --no-deps",
+    "test:strict": "cross-env STRICT=1 playwright test --project=e2e --project=integration --project=security",
+    "report": "playwright show-report",
+    "typecheck": "tsc -p .",
+    "evidence": "cross-env EVIDENCE=1 playwright test --project=evidence",
+    "test:cross-browser": "cross-env CROSS_BROWSER=1 playwright test --project=mobile-safari",
+    "test:docs": "cross-env UPDATE_DOCS=1 playwright test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^26.6.3",
+    "cross-env": "^10.1.0",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
