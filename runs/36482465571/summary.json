@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "startedAt": "2026-09-28T20:55:03.268Z",
+  "durationMs": 17409,
+  "totals": {
+    "tests": 19,
+    "passed": 18,
+    "knownBugs": 1,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0
+  },
+  "byProject": {
+    "integration": 19
+  },
+  "bugsConfirmedThisRun": [
+    "BUG-012"
+  ],
+  "metrics": {
+    "page-weight:homepage stays within a 3 MB transfer budget": "total 2.69 MB · images 1.37 MB · JS 661 KB · HTML 670 KB decoded",
+    "fast-3g:hero is readable within 10 s on a throttled \"Fast 3G\" connection": "h1 visible 956 ms · CTA visible 1262 ms"
+  }
+}
