@@ -1,0 +1,41 @@
+{
+  "status": "passed",
+  "startedAt": "2026-09-30T00:50:30.699Z",
+  "durationMs": 237581,
+  "totals": {
+    "tests": 190,
+    "passed": 168,
+    "knownBugs": 22,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0
+  },
+  "byProject": {
+    "e2e": 138,
+    "integration": 19,
+    "security": 32,
+    "load": 1
+  },
+  "bugsConfirmedThisRun": [
+    "BUG-001",
+    "BUG-002",
+    "BUG-003",
+    "BUG-004",
+    "BUG-005",
+    "BUG-008",
+    "BUG-009",
+    "BUG-010",
+    "BUG-011",
+    "BUG-012",
+    "BUG-013",
+    "BUG-014"
+  ],
+  "metrics": {
+    "LCP:/ records Largest Contentful Paint": "/: 956ms (img ) · CLS 0.010 · TTFB 71ms",
+    "LCP:/contact records Largest Contentful Paint": "/contact: 632ms (h1 Talk to an architect. 30 minutes.) · CLS 0.010 · TTFB 302ms",
+    "LCP:/work records Largest Contentful Paint": "/work: 1640ms (p Every venture here shipped to production) · CLS 0.018 · TTFB 69ms",
+    "page-weight:homepage stays within a 3 MB transfer budget": "total 2.69 MB · images 1.37 MB · JS 664 KB · HTML 670 KB decoded",
+    "fast-3g:hero is readable within 10 s on a throttled \"Fast 3G\" connection": "h1 visible 1563 ms · CTA visible 1962 ms",
+    "p95:exactly 5 concurrent users: p95 < 3000ms and zero 5xx @US-020": "781 ms document p95 · peak 5/5 users · 0 × 5xx"
+  }
+}
