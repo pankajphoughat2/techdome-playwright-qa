@@ -1,0 +1,502 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: e2e/mobile.spec.ts >> Responsive — mobile 375px @US-009 @US-010 >> /life-at-techdome has no horizontal overflow
+- Location: tests/e2e/mobile.spec.ts:70:11
+
+# Error details
+
+```
+Error: document is 386px wide in a 375px viewport; offenders: []
+
+expect(received).toBeLessThanOrEqual(expected)
+
+Expected: <= 375
+Received:    386
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - link "Techdome Venture Studio — home" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img "Techdome" [ref=e8]
+      - generic [ref=e9]:
+        - link "Book call" [ref=e10] [cursor=pointer]:
+          - /url: /contact
+        - button "Open navigation" [ref=e11]
+  - main [ref=e13]:
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e18]:
+          - generic [ref=e19]:
+            - generic [ref=e20]: Life at Techdome
+            - heading "Guided by our values, inspired by our beliefs." [level=1] [ref=e23]:
+              - generic [ref=e24]: Guided
+              - generic [ref=e25]: by
+              - generic [ref=e26]: our
+              - generic [ref=e27]: values,
+              - generic [ref=e28]: inspired
+              - generic [ref=e29]: by
+              - generic [ref=e30]: our
+              - generic [ref=e31]: beliefs.
+            - paragraph [ref=e33]: Our culture is centred on collaboration, creativity and mutual respect — working together to solve complex challenges and make a real impact. From overcoming challenges to celebrating successes, those principles shape how every pod operates day to day.
+          - generic [ref=e35]:
+            - img "Team onboarding session at the Techdome engineering floor" [ref=e37]
+            - img "Team members celebrating with gifts at an office event" [ref=e39]
+        - generic [ref=e41]:
+          - generic [ref=e42]:
+            - generic [ref=e43]: 80+
+            - generic [ref=e45]: Full-time engineers
+          - generic [ref=e46]:
+            - generic [ref=e47]: "3"
+            - generic [ref=e49]: Global hubs
+          - generic [ref=e50]:
+            - generic [ref=e51]: "5"
+            - generic [ref=e53]: Departments
+          - generic [ref=e54]:
+            - generic [ref=e55]: "6"
+            - generic [ref=e57]: Core benefits
+      - generic [ref=e60]:
+        - generic [ref=e61]:
+          - heading "Inspired by Our Beliefs" [level=2] [ref=e62]
+          - paragraph [ref=e63]: At Techdome, we create an environment where innovation thrives. Our culture is centred around collaboration, creativity, and mutual respect. We believe in working together to solve complex challenges and make a real impact.
+        - generic [ref=e64]:
+          - heading "Guided by Our Values" [level=2] [ref=e65]
+          - paragraph [ref=e66]: At Techdome, our core values guide everything we do. From overcoming challenges to celebrating successes, these principles are at the heart of our culture. Discover how our values inspire our daily work and shape our innovative, collaborative environment.
+      - generic [ref=e68]:
+        - generic [ref=e69]:
+          - generic [ref=e70]: The workspace
+          - heading "Techdome Work Environment" [level=2] [ref=e71]
+          - paragraph [ref=e72]: Experience a dynamic workspace designed to inspire and support. Our modern facilities are crafted for collaboration, creativity, and productivity, providing the ideal setting for our team to excel.
+        - generic [ref=e73]:
+          - img "Techdome main workspace" [ref=e76]
+          - img "Techdome workspace detail" [ref=e79]
+          - img "Techdome workspace overview" [ref=e82]
+      - generic [ref=e84]:
+        - generic [ref=e85]:
+          - generic [ref=e86]: The perks
+          - heading "Perks and Benefits" [level=2] [ref=e87]
+        - generic [ref=e88]:
+          - generic [ref=e89]: Group Medical Insurance
+          - generic [ref=e93]: Group Personal Accident Insurance
+          - generic [ref=e97]: Paternity and Adoption Leave Policy
+          - generic [ref=e101]: Free Assistance on Tax and Investment Planning
+          - generic [ref=e105]: Flexi Benefit Component Policy
+          - generic [ref=e109]: Fun Fridays
+      - generic [ref=e115]:
+        - img "A Techdome learning session — the team attending an internal training talk" [ref=e118]
+        - generic [ref=e119]:
+          - generic [ref=e120]: Continuous Learning
+          - paragraph [ref=e121]: “At Techdome, continuous learning drives our success. In our Learning Corner, we highlight the latest skills, knowledge, and training our teams are embracing to stay ahead in the ever-evolving tech landscape.”
+          - generic [ref=e122]: The Learning Corner
+          - paragraph [ref=e126]: Techdome engineers hold top global rankings in n8n automation and run regular community technical sessions — shared with the wider engineering community, not kept internal.
+      - generic [ref=e129]:
+        - generic [ref=e130]:
+          - generic [ref=e131]: Inside Our Departments
+          - heading "Inside Our Departments" [level=2] [ref=e132]
+          - paragraph [ref=e133]: At Techdome, our passion drives us to solve difficult customer challenges. We’re committed to the mission, put customers first, and deliver results.
+        - generic [ref=e134]:
+          - generic [ref=e138]:
+            - heading "Strategy & Operations" [level=3] [ref=e139]
+            - paragraph [ref=e140]: We're the thinkers and doers who craft strategies and streamline operations to help Techdome thrive and scale efficiently.
+          - generic [ref=e144]:
+            - heading "Client Success & Support" [level=3] [ref=e145]
+            - paragraph [ref=e146]: Our mission is to empower clients with the best tools and support, ensuring they achieve success with our innovative solutions.
+          - generic [ref=e150]:
+            - heading "Engineering & Development" [level=3] [ref=e151]
+            - paragraph [ref=e152]: We harness advanced technologies to build solutions that redefine industries.
+          - generic [ref=e156]:
+            - heading "IT & Infrastructure" [level=3] [ref=e157]
+            - paragraph [ref=e158]: We design and maintain secure, automated systems that keep Techdome running smoothly and securely, supporting our growth.
+          - generic [ref=e162]:
+            - heading "People & Culture" [level=3] [ref=e163]
+            - paragraph [ref=e164]: We build and nurture a diverse, inclusive workforce, ensuring that every employee has the support and resources they need to succeed.
+      - generic [ref=e167]:
+        - img "Techdome's team in matching Co-Creator shirts at an outdoor offsite" [ref=e169]
+        - generic [ref=e170]:
+          - generic [ref=e171]:
+            - generic [ref=e172]: Careers
+            - heading "Move your story forward." [level=2] [ref=e173]
+          - paragraph [ref=e174]: Passionate innovators who want to dive into cutting-edge projects and drive real change — we'd love to meet you.
+          - link "See open roles" [ref=e176] [cursor=pointer]:
+            - /url: /careers
+      - generic [ref=e181]:
+        - generic [ref=e182]:
+          - generic [ref=e183]: Life in pictures
+          - heading "Festivals, offsites and Fun Fridays." [level=2] [ref=e184]
+        - generic [ref=e185]:
+          - img "Techdome engineers sharing a laugh during an office moment" [ref=e187]
+          - img "The whole Techdome team dressed up for a festival celebration in the office" [ref=e189]
+          - img "A group of Techdome engineers celebrating a festival together" [ref=e191]
+          - img "The team gathered around the table for a candid group photo" [ref=e193]
+          - img "Techdome's team in matching \"Co-Creator\" shirts at an outdoor offsite" [ref=e195]
+          - img "A team member receiving recognition at a Techdome offsite, after dark" [ref=e197]
+          - img "The Techdome team attending an internal training session" [ref=e199]
+      - paragraph [ref=e202]: Life Is Good At Techdome.
+  - contentinfo [ref=e203]:
+    - generic [ref=e204]:
+      - generic [ref=e206]:
+        - generic [ref=e207]:
+          - heading "Subscribe to our newsletter" [level=2] [ref=e212]
+          - paragraph [ref=e213]: Bi-weekly architectural breakdowns, system design notes and engineering insights.
+        - generic [ref=e216]:
+          - generic [ref=e217]:
+            - textbox "Enter your work email" [ref=e219]
+            - button "Subscribe" [ref=e220] [cursor=pointer]
+          - generic [ref=e223]:
+            - text: Every other Monday. Unsubscribe anytime.
+            - link "Privacy policy" [ref=e224] [cursor=pointer]:
+              - /url: /privacy
+      - generic [ref=e225]:
+        - generic [ref=e226]:
+          - link "Techdome Product venture studio" [ref=e227] [cursor=pointer]:
+            - /url: /
+            - img "Techdome" [ref=e228]
+            - generic [ref=e229]: Product venture studio
+          - paragraph [ref=e230]: "We build software ventures two ways: our own products, and yours. Senior engineering pods, a proven blueprint, and production AI automation."
+          - link "Book a 30-minute call" [ref=e231] [cursor=pointer]:
+            - /url: /contact
+          - generic [ref=e235]:
+            - link "WhatsApp" [ref=e236] [cursor=pointer]:
+              - /url: /go/whatsapp
+            - link "+91 9652049922" [ref=e240] [cursor=pointer]:
+              - /url: tel:+919652049922
+          - link "Techdome, 3rd floor, 91springboard, Laxmi Cyber City, Whitefields, Kondapur, HITEC City, Hyderabad, Telangana 500084" [ref=e245] [cursor=pointer]:
+            - /url: https://www.google.com/maps/search/?api=1&query=17.45731%2C78.36569
+          - generic [ref=e250]:
+            - link "Upwork $300K+ · 100% Upwork" [ref=e251] [cursor=pointer]:
+              - /url: https://www.upwork.com/agencies/techdome
+              - img "Upwork" [ref=e252]
+              - generic [ref=e254]: $300K+ · 100% Upwork
+            - link [ref=e255] [cursor=pointer]:
+              - /url: https://clutch.co/profile/techdome
+              - img "Clutch verified agency profile" [ref=e256]
+              - generic [aria-hidden] [ref=e257]: Clutch
+            - link "Techdome on LinkedIn" [ref=e258] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/techdome-solutions
+              - img "LinkedIn" [ref=e259]
+            - link "Techdome on X" [ref=e261] [cursor=pointer]:
+              - /url: https://x.com/techdomesolves
+              - img "X (Twitter)" [ref=e262]
+            - link "Techdome on Instagram" [ref=e264] [cursor=pointer]:
+              - /url: https://www.instagram.com/techdome.io/
+              - img "Instagram" [ref=e265]
+            - link "Techdome on GitHub" [ref=e268] [cursor=pointer]:
+              - /url: https://github.com/techdome-io
+              - img "GitHub" [ref=e269]
+            - link "Techdome on Facebook" [ref=e271] [cursor=pointer]:
+              - /url: https://www.facebook.com/techdomesolutions
+              - img "Facebook" [ref=e272]
+            - link "Techdome on YouTube" [ref=e274] [cursor=pointer]:
+              - /url: https://www.youtube.com/@automationsbyrahul
+              - img "YouTube" [ref=e275]
+        - generic [ref=e277]:
+          - navigation "Services" [ref=e278]:
+            - heading [level=2] [ref=e279]:
+              - link "Services" [ref=e280] [cursor=pointer]:
+                - /url: /services
+            - list [ref=e284]:
+              - listitem [ref=e285]:
+                - link "Venture Studio" [ref=e286] [cursor=pointer]:
+                  - /url: /studio
+              - listitem [ref=e288]:
+                - link "Techdome Ventures (fund)" [ref=e289] [cursor=pointer]:
+                  - /url: /ventures
+              - listitem [ref=e291]:
+                - link "MVP development" [ref=e292] [cursor=pointer]:
+                  - /url: /studio#mvp
+              - listitem [ref=e294]:
+                - link "Staff Augmentation" [ref=e295] [cursor=pointer]:
+                  - /url: /staff-augmentation
+              - listitem [ref=e297]:
+                - link "Hire React developers" [ref=e298] [cursor=pointer]:
+                  - /url: /staff-augmentation#role-react-nextjs
+              - listitem [ref=e300]:
+                - link "Hire Node.js developers" [ref=e301] [cursor=pointer]:
+                  - /url: /staff-augmentation#role-nodejs-backend
+              - listitem [ref=e303]:
+                - link "n8n & AI Automation Moat" [ref=e304] [cursor=pointer]:
+                  - /url: /automation
+                  - generic [ref=e305]: n8n & AI Automation
+                  - generic [ref=e306]: Moat
+              - listitem [ref=e307]:
+                - link "GCC Services" [ref=e308] [cursor=pointer]:
+                  - /url: /gcc
+              - listitem [ref=e310]:
+                - link "Pricing" [ref=e311] [cursor=pointer]:
+                  - /url: /pricing
+              - listitem [ref=e313]:
+                - link "AI voice agents" [ref=e314] [cursor=pointer]:
+                  - /url: /automation#ai-voice-agents
+          - navigation "Industries" [ref=e316]:
+            - heading [level=2] [ref=e317]:
+              - link "Industries" [ref=e318] [cursor=pointer]:
+                - /url: /work
+            - list [ref=e322]:
+              - listitem [ref=e323]:
+                - link "Healthcare" [ref=e324] [cursor=pointer]:
+                  - /url: /industries/healthcare-software-development
+              - listitem [ref=e326]:
+                - link "Enterprise & ERP" [ref=e327] [cursor=pointer]:
+                  - /url: /work?domain=Enterprise%20%26%20ERP#case-studies
+              - listitem [ref=e329]:
+                - link "AI & Automation" [ref=e330] [cursor=pointer]:
+                  - /url: /work?domain=AI%20%26%20Automation#case-studies
+              - listitem [ref=e332]:
+                - link "FinTech" [ref=e333] [cursor=pointer]:
+                  - /url: /work?domain=FinTech#case-studies
+              - listitem [ref=e335]:
+                - link "Consumer & Marketplace" [ref=e336] [cursor=pointer]:
+                  - /url: /work?domain=Consumer%20%26%20Marketplace#case-studies
+              - listitem [ref=e338]:
+                - link "Public Sector" [ref=e339] [cursor=pointer]:
+                  - /url: /work?domain=Public%20Sector#case-studies
+              - listitem [ref=e341]:
+                - link "Education" [ref=e342] [cursor=pointer]:
+                  - /url: /work?domain=EdTech%20%26%20Education#case-studies
+              - listitem [ref=e344]:
+                - link "Telehealth" [ref=e345] [cursor=pointer]:
+                  - /url: /industries/telehealth-software-development
+          - navigation "Products" [ref=e347]:
+            - heading [level=2] [ref=e348]:
+              - link "Products" [ref=e349] [cursor=pointer]:
+                - /url: /products
+            - list [ref=e353]:
+              - listitem [ref=e354]:
+                - 'link "Sparrow PH #4 ×2" [ref=e355] [cursor=pointer]':
+                  - /url: /products/sparrow
+                  - generic [ref=e356]: Sparrow
+                  - generic [ref=e357]: "PH #4 ×2"
+              - listitem [ref=e358]:
+                - link "JustInterview.ai" [ref=e359] [cursor=pointer]:
+                  - /url: /products/justinterview-ai
+              - listitem [ref=e361]:
+                - link "Saral Funding" [ref=e362] [cursor=pointer]:
+                  - /url: /products/saral-funding
+              - listitem [ref=e364]:
+                - link "Geolytics" [ref=e365] [cursor=pointer]:
+                  - /url: /products/geolytics
+              - listitem [ref=e367]:
+                - link "Aether Voice" [ref=e368] [cursor=pointer]:
+                  - /url: /products/aether-voice
+              - listitem [ref=e370]:
+                - link "Catalyst" [ref=e371] [cursor=pointer]:
+                  - /url: /products/catalyst
+              - listitem [ref=e373]:
+                - link "ARC Studio OS" [ref=e374] [cursor=pointer]:
+                  - /url: /products/arc
+          - navigation "Company" [ref=e376]:
+            - heading "Company" [level=2] [ref=e377]
+            - list [ref=e378]:
+              - listitem [ref=e379]:
+                - link "About & entities" [ref=e380] [cursor=pointer]:
+                  - /url: /about
+              - listitem [ref=e382]:
+                - link "Portfolio" [ref=e383] [cursor=pointer]:
+                  - /url: /work
+              - listitem [ref=e385]:
+                - link "Engineering insights" [ref=e386] [cursor=pointer]:
+                  - /url: /insights
+              - listitem [ref=e388]:
+                - link "Topics" [ref=e389] [cursor=pointer]:
+                  - /url: /topics
+              - listitem [ref=e391]:
+                - link "Glossary" [ref=e392] [cursor=pointer]:
+                  - /url: /glossary
+              - listitem [ref=e394]:
+                - link "Free tools" [ref=e395] [cursor=pointer]:
+                  - /url: /tools
+              - listitem [ref=e397]:
+                - link "n8n templates" [ref=e398] [cursor=pointer]:
+                  - /url: /automation/templates
+              - listitem [ref=e400]:
+                - link "Newsletter" [ref=e401] [cursor=pointer]:
+                  - /url: /newsletter
+              - listitem [ref=e403]:
+                - link "Life at Techdome" [ref=e404] [cursor=pointer]:
+                  - /url: /life-at-techdome
+              - listitem [ref=e406]:
+                - link "Careers Hiring" [ref=e407] [cursor=pointer]:
+                  - /url: /careers
+                  - generic [ref=e408]: Careers
+                  - generic [ref=e409]: Hiring
+              - listitem [ref=e410]:
+                - link "FAQ" [ref=e411] [cursor=pointer]:
+                  - /url: /faq
+      - generic [ref=e413]:
+        - generic [ref=e414]:
+          - link "Privacy" [ref=e415] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms" [ref=e416] [cursor=pointer]:
+            - /url: /terms
+          - link "Security" [ref=e417] [cursor=pointer]:
+            - /url: /security
+          - link "Client reviews" [ref=e418] [cursor=pointer]:
+            - /url: /reviews
+          - link "Cookie policy" [ref=e419] [cursor=pointer]:
+            - /url: /cookie-policy
+          - button "Cookie settings" [ref=e420]
+          - button "Do not sell or share my personal information" [ref=e421]
+          - link "Sitemap" [ref=e422] [cursor=pointer]:
+            - /url: /sitemap.xml
+        - generic [ref=e423]:
+          - generic "ISO Accredited" [ref=e424]:
+            - img "ISO Accredited" [ref=e425]
+            - generic [ref=e431]: ISO
+          - generic "DPIIT Recognized" [ref=e432]:
+            - img "DPIIT Recognized" [ref=e433]:
+              - generic [ref=e438]: DPIIT
+              - generic [ref=e439]: GOVT. OF INDIA
+            - generic [ref=e440]: DPIIT
+          - link "TechBehemoths Verification":
+            - /url: https://techbehemoths.com/company/techdome
+            - img "TechBehemoths Verification"
+        - generic [ref=e441]: © Copyright 2026, All Rights Reserved by Techdome
+  - alert [ref=e442]
+  - dialog "Cookie preferences" [ref=e443]:
+    - paragraph [ref=e444]:
+      - text: We use cookies to measure how the site is used and which ads bring visitors here. Nothing runs until you choose, and the site works either way.
+      - link "Cookie policy" [ref=e445] [cursor=pointer]:
+        - /url: /cookie-policy
+    - generic [ref=e446]:
+      - button "Reject all" [ref=e447]
+      - button "Accept all" [ref=e448]
+    - button "Preferences" [ref=e449]
+```
+
+# Test source
+
+```ts
+  1   | import { test, expect } from '../../utils/fixtures';
+  2   | import { CORE_PAGES, findHorizontalOverflow, knownBug, waitForStableLayout } from '../../utils/helpers';
+  3   | import { BasePage } from '../../pages/BasePage';
+  4   | 
+  5   | /**
+  6   |  * Pages observed to overflow (BUG-001). The leaf offender is the fixed header wrapper
+  7   |  * (`div.fixed.top-0.left-0`) growing to the document width; on `/` at 768px it's the
+  8   |  * decorative `.blueprint-grid` layer. Kept as an explicit list so a NEW overflowing
+  9   |  * page fails loudly instead of being silently absorbed.
+  10  |  */
+  11  | const OVERFLOWING: Record<number, string[]> = {
+  12  |   375: ['/', '/automation', '/products', '/life-at-techdome'],
+  13  |   768: ['/'],
+  14  | };
+  15  | 
+  16  | const VIEWPORTS = [
+  17  |   { label: 'mobile 375px', width: 375, height: 812 },
+  18  |   { label: 'tablet 768px', width: 768, height: 1024 },
+  19  | ] as const;
+  20  | 
+  21  | for (const vp of VIEWPORTS) {
+  22  |   test.describe(`Responsive — ${vp.label} @US-009 @US-010`, () => {
+  23  |     test.use({ viewport: { width: vp.width, height: vp.height }, isMobile: vp.width < 768, hasTouch: true });
+  24  | 
+  25  |     test('desktop nav collapses into a hamburger menu', async ({ page }) => {
+  26  |       const base = new BasePage(page);
+  27  |       await base.goto('/');
+  28  |       await expect(base.primaryNav).toBeHidden();
+  29  |       await expect(base.mobileMenuButton).toBeVisible();
+  30  |     });
+  31  | 
+  32  |     test('hamburger opens a menu that navigates to a page', async ({ page }) => {
+  33  |       const base = new BasePage(page);
+  34  |       await base.goto('/');
+  35  |       await expect(base.mobileMenuButton).toHaveAttribute('aria-controls', 'mobile-nav');
+  36  |       // Button flips to "Close navigation" + aria-expanded — screen readers get the state change.
+  37  |       await base.openMobileMenu();
+  38  |       // Scoped to the panel on purpose: an earlier unscoped locator "passed" by clicking the
+  39  |       // footer's Services link — the menu doesn't contain one (see BUG-008).
+  40  |       for (const name of ['Staff Augmentation', 'About Us', 'Contact Us']) {
+  41  |         await expect(base.mobileNav.getByRole('link', { name })).toBeVisible();
+  42  |       }
+  43  |       await base.mobileNav.getByRole('link', { name: 'Staff Augmentation' }).click();
+  44  |       await expect(page).toHaveURL(/\/staff-augmentation$/);
+  45  |       await expect(base.mobileNav).toBeHidden();
+  46  |     });
+  47  | 
+  48  |     test('hero content and primary CTA fit the viewport', async ({ homePage }) => {
+  49  |       await homePage.open();
+  50  |       await expect(homePage.heroHeading).toBeVisible();
+  51  |       await expect(homePage.bookTeardownCta).toBeInViewport();
+  52  |       const box = await homePage.bookTeardownCta.boundingBox();
+  53  |       expect(box!.x).toBeGreaterThanOrEqual(0);
+  54  |       expect(box!.x + box!.width).toBeLessThanOrEqual(vp.width);
+  55  |       // WCAG 2.5.8 minimum target size is 24px; Apple/Google recommend 44px for touch.
+  56  |       expect(box!.height).toBeGreaterThanOrEqual(44);
+  57  |     });
+  58  | 
+  59  |     test('hamburger button is fully inside the viewport', async ({ page }) => {
+  60  |       if (vp.width === 375) knownBug('BUG-001', 'Homepage overflows at 375px; hamburger is pushed past the right edge');
+  61  |       const base = new BasePage(page);
+  62  |       await base.goto('/');
+  63  |       const box = await base.mobileMenuButton.boundingBox();
+  64  |       expect(box!.x + box!.width, 'hamburger right edge').toBeLessThanOrEqual(vp.width);
+  65  |     });
+  66  | 
+  67  |     // Phones get every page (the persona lives there); tablets get a representative set.
+  68  |     const paths = vp.width === 375 ? CORE_PAGES.map((p) => p.path) : ['/', '/contact', '/newsletter', '/services'];
+  69  |     for (const path of paths) {
+  70  |       test(`${path} has no horizontal overflow`, async ({ page }) => {
+  71  |         const known = OVERFLOWING[vp.width] ?? [];
+  72  |         if (known.includes(path)) knownBug('BUG-001', `${path} is wider than a ${vp.width}px viewport`);
+  73  |         const base = new BasePage(page);
+  74  |         await base.goto(path);
+  75  |         await waitForStableLayout(page);
+  76  |         const result = await findHorizontalOverflow(page);
+  77  |         await test.info().attach(`overflow-${vp.width}${path.replace(/\//g, '_')}.json`, {
+  78  |           body: JSON.stringify(result, null, 2), contentType: 'application/json',
+  79  |         });
+  80  |         expect(result.scrollWidth, `document is ${result.scrollWidth}px wide in a ${result.viewport}px viewport; offenders: ${JSON.stringify(result.offenders)}`)
+> 81  |           .toBeLessThanOrEqual(result.viewport);
+      |            ^ Error: document is 386px wide in a 375px viewport; offenders: []
+  82  |       });
+  83  |     }
+  84  |   });
+  85  | }
+  86  | 
+  87  | test.describe('Responsive — phone landscape 812×375 @US-009', () => {
+  88  |   test.use({ viewport: { width: 812, height: 375 }, isMobile: true, hasTouch: true });
+  89  | 
+  90  |   test('homepage has no horizontal overflow in landscape', async ({ page }) => {
+  91  |     knownBug('BUG-001', 'Homepage overflows (818px) in an 812px landscape viewport');
+  92  |     await page.goto('/');
+  93  |     await waitForStableLayout(page);
+  94  |     const r = await findHorizontalOverflow(page);
+  95  |     expect(r.scrollWidth, JSON.stringify(r.offenders)).toBeLessThanOrEqual(r.viewport);
+  96  |   });
+  97  | 
+  98  |   test('hero CTA is reachable without scrolling past a short viewport', async ({ homePage }) => {
+  99  |     await homePage.open();
+  100 |     await homePage.bookTeardownCta.scrollIntoViewIfNeeded();
+  101 |     await expect(homePage.bookTeardownCta).toBeInViewport();
+  102 |     await homePage.bookTeardownCta.click();
+  103 |     await expect(homePage.page).toHaveURL(/\/contact$/);
+  104 |   });
+  105 | });
+  106 | 
+  107 | test.describe('Mobile menu behaviour @US-009', () => {
+  108 |   test.use({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
+  109 | 
+  110 |   test('menu can be closed again with its own button', async ({ page }) => {
+  111 |     const base = new BasePage(page);
+  112 |     await base.goto('/');
+  113 |     await base.openMobileMenu();
+  114 |     await expect(base.mobileNav).toBeVisible();
+  115 |     await base.mobileMenuCloseButton.click();
+  116 |     await expect(base.mobileNav).toBeHidden();
+  117 |     await expect(base.mobileMenuButton).toHaveAttribute('aria-expanded', 'false');
+  118 |   });
+  119 | });
+  120 | 
+```
