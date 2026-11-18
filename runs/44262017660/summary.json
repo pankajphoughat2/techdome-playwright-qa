@@ -1,0 +1,39 @@
+{
+  "status": "failed",
+  "startedAt": "2026-11-18T07:50:59.808Z",
+  "durationMs": 314515,
+  "totals": {
+    "tests": 189,
+    "passed": 135,
+    "knownBugs": 10,
+    "flaky": 2,
+    "failed": 41,
+    "skipped": 1
+  },
+  "byProject": {
+    "e2e": 138,
+    "integration": 19,
+    "security": 32
+  },
+  "bugsConfirmedThisRun": [
+    "BUG-001",
+    "BUG-002",
+    "BUG-003",
+    "BUG-004",
+    "BUG-005",
+    "BUG-008",
+    "BUG-009",
+    "BUG-010",
+    "BUG-011",
+    "BUG-012",
+    "BUG-013",
+    "BUG-014"
+  ],
+  "metrics": {
+    "LCP:/contact records Largest Contentful Paint": "/contact: 880ms (p We use cookies to measure how the site i) · CLS 0.000 · TTFB 211ms",
+    "LCP:/ records Largest Contentful Paint": "/: 484ms (img ) · CLS 0.001 · TTFB 183ms",
+    "LCP:/work records Largest Contentful Paint": "/work: 312ms (p Real systems in clinical healthcare, ent) · CLS 0.000 · TTFB 131ms",
+    "page-weight:homepage stays within a 3 MB transfer budget": "total 1.78 MB · images 0.06 MB · JS 772 KB · HTML 427 KB decoded",
+    "fast-3g:hero is readable within 10 s on a throttled \"Fast 3G\" connection": "h1 visible 3557 ms · CTA visible 3751 ms"
+  }
+}
