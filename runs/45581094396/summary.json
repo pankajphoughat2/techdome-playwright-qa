@@ -1,0 +1,39 @@
+{
+  "status": "failed",
+  "startedAt": "2026-11-25T08:59:46.231Z",
+  "durationMs": 530012,
+  "totals": {
+    "tests": 189,
+    "passed": 127,
+    "knownBugs": 10,
+    "flaky": 0,
+    "failed": 51,
+    "skipped": 1
+  },
+  "byProject": {
+    "e2e": 138,
+    "integration": 19,
+    "security": 32
+  },
+  "bugsConfirmedThisRun": [
+    "BUG-001",
+    "BUG-002",
+    "BUG-003",
+    "BUG-004",
+    "BUG-005",
+    "BUG-008",
+    "BUG-009",
+    "BUG-010",
+    "BUG-011",
+    "BUG-012",
+    "BUG-013",
+    "BUG-014"
+  ],
+  "metrics": {
+    "LCP:/contact records Largest Contentful Paint": "/contact: 1588ms (p We use cookies to make this site work, t) · CLS 0.000 · TTFB 326ms",
+    "LCP:/ records Largest Contentful Paint": "/: 760ms (img ) · CLS 0.000 · TTFB 228ms",
+    "LCP:/work records Largest Contentful Paint": "/work: 932ms (p Techdome case studies are real systems w) · CLS 0.000 · TTFB 485ms",
+    "page-weight:homepage stays within a 3 MB transfer budget": "total 0.67 MB · images 0.04 MB · JS 289 KB · HTML 424 KB decoded",
+    "fast-3g:hero is readable within 10 s on a throttled \"Fast 3G\" connection": "h1 visible 3964 ms · CTA visible 4165 ms"
+  }
+}
